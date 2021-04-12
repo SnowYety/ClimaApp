@@ -4,7 +4,7 @@ const Busquedas = require("./models/busquedas");
 
 const main = async()=> {
     let opt;
-    const busquedas = new Busquedas;
+    const busquedas = new Busquedas();
     do{
         opt = await inquirerMenu();
         switch (opt) {
@@ -15,23 +15,30 @@ const main = async()=> {
 
                 const idLugar = await listarLugares(lugares);
 
-                const lugarSelec = lugares.find(l => l.id===idLugar)
+                if(idLugar === '0') continue;
+                const lugarSelec = lugares.find(l => l.id===idLugar);
 
-                busquedas.buscarClimaLugar(lugarSelec.lat,lugarSelec.lng);
+                busquedas.agregarHistorial(lugarSelec.nombre);
+
+                const clima = await busquedas.buscarClimaLugar(lugarSelec.lat,lugarSelec.lng);
 
 
                 console.log('\nInformacion del Lugar\n'.green);
                 console.log('Lugar:', lugarSelec.nombre);
                 console.log('Lat:' ,lugarSelec.lat);
                 console.log('Lgn:',lugarSelec.lng);
-                console.log('Temperatura:');
-                console.log('Lugar:');
-                console.log('Minima:');
-                console.log('Maxima:');
+                console.log('Temperatura:',clima.temp);
+                console.log('Descripcion:',clima.desc);
+                console.log('Minima:',clima.min);
+                console.log('Maxima:',clima.max);
 
                 break;
         
-            default:
+            case 2:
+                busquedas.historialCapitalizado.forEach((lugar,i) => {
+                    idx = `${i + 1}.`.blue
+                    console.log(`${idx} ${lugar}`);
+                })
                 break;
         }
 
